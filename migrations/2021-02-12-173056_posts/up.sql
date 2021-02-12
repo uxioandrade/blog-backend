@@ -1,0 +1,9 @@
+CREATE TABLE posts (
+	id SERIAL PRIMARY KEY,
+	url VARCHAR(100) NOT NULL,
+	title VARCHAR(100) NOT NULL,
+	description VARCHAR(500),
+	image_url VARCHAR(100) NOT NULL,
+	date VARCHAR(20) NOT NULL,
+	length SMALLINT
+);
