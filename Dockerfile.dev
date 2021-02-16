@@ -3,4 +3,6 @@ WORKDIR /app
 COPY . .
 RUN rustup default nightly
 RUN cargo build
-CMD ["cargo","run"]
+RUN cargo install diesel_cli
+RUN cargo install watchexec
+CMD ["watchexec","--restart","cargo","run"]
