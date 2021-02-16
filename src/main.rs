@@ -9,6 +9,7 @@ use rocket::response::content::Json;
 
 mod db;
 mod users;
+mod posts;
 pub mod schema;
 
 #[get("/ping")]
@@ -23,5 +24,6 @@ fn main() {
     let mut rocket = rocket::ignite()
         .manage(db::init_pool());
     rocket = users::mount(rocket);
+    rocket = posts::mount(rocket);
     rocket.launch();
 }

@@ -41,4 +41,18 @@ impl User {
 
         users::table.order(users::id.desc()).first(connection)
     }
+
+    pub fn get_by_username_and_password(username_: String, password_: String, connection: &PgConnection) -> Option<User> {
+        let res = users::table
+            .filter(users::username.eq(username_))
+            .filter(users::password.eq(password_))
+            .order(users::id)
+            .first(connection);
+        match res {
+            Ok(user) => Some(user),
+            Err(_) => {
+                None
+            }
+        }
+    }
 }
