@@ -6,13 +6,32 @@ use self::model::Post;
 
 use serde::{Serialize,Deserialize};
 
+use crate::users::model::User;
+use crate::users::auth::ApiKey;
+use crate::users::auth::jwt::{
+    Header,
+    Registered,
+    Token,
+};
+
+
 use crate::db;
 
 #[post("/", data="<post>")]
-fn create(post: Json<Post>, connection: db::DbConn) -> Result<Json<Post>, Status> {
+fn create(_key: ApiKey, post: Json<Post>, connection: db::DbConn) -> Result<Json<Post>, Status> {
     Post::create(post.into_inner(), &connection)
         .map(Json)
         .map_err(|_| Status::InternalServerError)
+}
+
+#[post("/", data="<post>", rank=2)]
+fn create_error(post: Json<Post>) -> Json<JsonValue> {
+    Json(json!(
+            {
+                "success":false,
+                "message": "Not authorized"
+            }
+        ))
 }
 
 #[get("/")]
@@ -24,5 +43,5 @@ fn read(connection: db::DbConn) -> Result<Json<JsonValue>, Status> {
 
 pub fn mount(rocket: rocket::Rocket) -> rocket::Rocket {
     rocket
-        .mount("/posts", routes![create,read])
+        .mount("/posts", routes![create,read,create_error])
 }
