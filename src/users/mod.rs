@@ -33,6 +33,16 @@ fn info(key: ApiKey) -> Json<JsonValue> {
     ))
 }
 
+#[get("/info", rank = 2)]
+fn info_error() -> Json<JsonValue> {
+    Json(json!(
+        {
+            "success": false,
+            "message": "Not authorized"
+        }
+    ))
+}
+
 #[derive(Serialize, Deserialize)]
 struct Credentials {
    username: String,
@@ -65,6 +75,6 @@ let header: Header = Default::default();
 
 pub fn mount(rocket: rocket::Rocket) -> rocket::Rocket {
     rocket
-        .mount("/user", routes![create,info])
+        .mount("/user", routes![create,info,info_error])
         .mount("/auth", routes![login])
 }
