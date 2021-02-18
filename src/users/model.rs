@@ -5,6 +5,7 @@ use diesel::pg::PgConnection;
 
 use serde::{Serialize,Deserialize};
 
+use bcrypt::{DEFAULT_COST, hash, verify};
 
 #[derive(Serialize, Deserialize, Queryable, AsChangeset)]
 #[table_name = "users"]
@@ -35,8 +36,12 @@ impl InsertableUser {
 
 impl User {
     pub fn create(user: User, connection: &PgConnection) -> QueryResult<User> {
+        let encrypted_user = User {
+            password: hash(user.password,DEFAULT_COST).unwrap(),
+            ..user
+        };
         diesel::insert_into(users::table)
-        .values(&InsertableUser::from_user(user))
+        .values(&InsertableUser::from_user(encrypted_user))
         .execute(connection)?;
 
         users::table.order(users::id.desc()).first(connection)
@@ -45,11 +50,16 @@ impl User {
     pub fn get_by_username_and_password(username_: String, password_: String, connection: &PgConnection) -> Option<User> {
         let res = users::table
             .filter(users::username.eq(username_))
-            .filter(users::password.eq(password_))
-            .order(users::id)
-            .first(connection);
+            .get_result::<User>(connection);
         match res {
-            Ok(user) => Some(user),
+            Ok(user) => {
+                if let Ok(matching) = verify(&password_,&user.password) {
+                    if matching {
+                        return Some(user)
+                    }
+                }
+                return None
+            }
             Err(_) => {
                 None
             }
