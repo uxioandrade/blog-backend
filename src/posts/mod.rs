@@ -4,15 +4,7 @@ use rocket::{self, http::Status};
 use rocket_contrib::json::{Json, JsonValue};
 use self::model::Post;
 
-use serde::{Serialize,Deserialize};
-
-use crate::users::model::User;
 use crate::users::auth::ApiKey;
-use crate::users::auth::jwt::{
-    Header,
-    Registered,
-    Token,
-};
 
 
 use crate::db;

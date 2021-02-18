@@ -9,10 +9,8 @@ use std::ops::Deref;
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
-static DATABASE_URL: &str = "postgres://postgres:password@postgres/blog";
-
 pub fn init_pool() -> Pool {
-    let manager = ConnectionManager::<PgConnection>::new(DATABASE_URL);
+    let manager = ConnectionManager::<PgConnection>::new(database_url());
     Pool::new(manager).expect("db pool")
 }
 
