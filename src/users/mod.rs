@@ -13,7 +13,6 @@ use self::auth::jwt::{
 };
 
 use serde::{Serialize,Deserialize};
-
 use crate::db;
 
 #[post("/", format="application/json", data = "<user>")]
